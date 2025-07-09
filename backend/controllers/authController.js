@@ -15,7 +15,7 @@ exports.register = (req, res) => {
     const hash = bcrypt.hashSync(password, 10);
 
     db.query(
-      "INSERT INTO users (email, password, cpf, telefone) VALUES ($1, $2, $3, $4)",
+      "INSERT INTO users (email, password, cpf, phone) VALUES ($1, $2, $3, $4)",
       [email, hash, cpf, telefone],
       (err2) => {
         if (err2) return res.status(500).send("Erro ao cadastrar");
