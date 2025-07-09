@@ -15,6 +15,9 @@ app.use(express.json());
 
 app.use("/auth", require("./routes/auth"));
 app.use("/ml", require("./routes/mercadoLivre"));
+// server.js ou app.js
+app.use("/user", require("./routes/user"));
+
 
 // Rota protegida de exemplo
 app.get("/protegida", verifyToken, (req, res) => {
