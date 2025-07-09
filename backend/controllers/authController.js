@@ -5,7 +5,7 @@ const { sendRecoveryEmail } = require("../utils/emailService");
 const crypto = require("crypto");
 
 exports.register = (req, res) => {
-  const { email, password, cpf, telefone } = req.body;
+  const { email, password, cpf, phone } = req.body;
 
   db.query("SELECT * FROM users WHERE email = $1", [email], (err, result) => {
     if (result.rows.length > 0) {
@@ -16,7 +16,7 @@ exports.register = (req, res) => {
 
     db.query(
       "INSERT INTO users (email, password, cpf, phone) VALUES ($1, $2, $3, $4)",
-      [email, hash, cpf, telefone],
+      [email, hash, cpf, phone],
       (err2) => {
         if (err2) return res.status(500).send("Erro ao cadastrar");
         res.send("Usuário cadastrado com sucesso");
