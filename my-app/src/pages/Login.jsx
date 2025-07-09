@@ -32,43 +32,34 @@ export default function Login({ onLogin }) {
       .replace(/(\d{5})(\d{4})$/, "$1-$2");
   };
 
-  const onSubmit = async (data) => {
-    if (isLoginMode) {
-      try {
-        const res = await axios.post(`${API_BASE}/auth/login`, {
-          email: data.email,
-          password: data.password
-        });
-        onLogin(res.data.userId);
-      } catch (err) {
-        alert("Email ou senha incorretos");
-        console.error(err);
-      }
-    } else {
-      if (data.password !== data.confirmSenha) {
-        return alert("Senhas não coincidem");
-      }
-
-      try {
-        await axios.post(`${API_BASE}/auth/register`, {
-          email: data.email,
-          password: data.password,
-          cpf: data.cpf,
-          telefone: data.telefone
-        });
-        alert("Cadastro realizado com sucesso");
-        reset();
-        setIsLoginMode(true);
-      } catch (err) {
-        if (err.response?.status === 409) {
-          alert("E-mail já cadastrado");
-        } else {
-          alert("Erro ao cadastrar");
-        }
-        console.error(err);
-      }
+ const onSubmit = async (data) => {
+  if (isLoginMode) {
+    // Login
+    try {
+      const res = await axios.post(`${API_BASE}/auth/login`, {
+        email: data.email,
+        password: data.password
+      });
+      // Trate o login aqui
+    } catch (err) {
+      // Trate o erro aqui
     }
-  };
+  } else {
+    // Cadastro
+    try {
+      const res = await axios.post(`${API_BASE}/auth/register`, {
+        email: data.email,
+        password: data.password,
+        cpf: data.cpf,
+        phone: data.phone // <-- Troque para phone!
+      });
+      // Trate o sucesso do cadastro aqui
+    } catch (err) {
+      // Trate o erro aqui
+    }
+  }
+};
+
 
   return (
     <div className="container">
@@ -99,8 +90,8 @@ export default function Login({ onLogin }) {
               {errors.cpf && <p className="error">CPF obrigatório</p>}
 
               <input
-                placeholder="Telefone"
-                {...register("telefone", { required: true })}
+                placeholder="phone"
+                {...register("phone", { required: true })}
                 onChange={(e) => (e.target.value = formatTelefone(e.target.value))}
               />
               {errors.telefone && <p className="error">Telefone obrigatório</p>}

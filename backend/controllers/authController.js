@@ -6,14 +6,12 @@ const crypto = require("crypto");
 
 exports.register = (req, res) => {
   const { email, password, cpf, phone } = req.body;
-
   db.query("SELECT * FROM users WHERE email = $1", [email], (err, result) => {
+    if (err) return res.status(500).send("Erro no servidor");
     if (result.rows.length > 0) {
       return res.status(409).send("Email já cadastrado");
     }
-
     const hash = bcrypt.hashSync(password, 10);
-
     db.query(
       "INSERT INTO users (email, password, cpf, phone) VALUES ($1, $2, $3, $4)",
       [email, hash, cpf, phone],
@@ -25,25 +23,21 @@ exports.register = (req, res) => {
   });
 };
 
+
 exports.login = (req, res) => {
   const { email, password } = req.body;
-
   db.query("SELECT * FROM users WHERE email = $1", [email], (err, result) => {
-    if (err || result.rows.length === 0) {
-      return res.status(401).json({ error: "Email inválido" });
-    }
-
+    if (err) return res.status(500).send("Erro no servidor");
+    if (result.rows.length === 0) return res.status(401).send("Usuário ou senha incorretos");
     const user = result.rows[0];
-    const valid = bcrypt.compareSync(password, user.password);
-    if (!valid) return res.status(401).json({ error: "Senha incorreta" });
-
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "2h"
-    });
-
-    res.json({ userId: user.id, token });
+    if (!bcrypt.compareSync(password, user.password)) {
+      return res.status(401).send("Usuário ou senha incorretos");
+    }
+    // Aqui pode gerar token JWT ou retornar dados do usuário
+    res.send("Login realizado com sucesso");
   });
 };
+
 
 exports.forgotPassword = (req, res) => {
   const { email } = req.body;
